@@ -44,9 +44,9 @@ THEN I am prompted to select an employee to update and their new role
 
 ## installation
 
-git clone 
+git clone https://github.com/vw0389/CLI-Employee-Manager
 
-cd challenge_12
+cd CLI-Employee-Manager
 
 npm install
 
