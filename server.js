@@ -1,8 +1,10 @@
-const mysql = require('mysql2');
+const db = require('./db/connection');
 
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    database: 'test'
+
+db.connect(err => {
+  if (err) throw err;
+  console.log('Database connected.');
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
   });
-  
+});
