@@ -50,7 +50,7 @@ function prompt() {
         console.table(rows);
         prompt();
       });
-      
+
     } else if (answers.whatToDo === "add a department") {
       inquirer.prompt([
         {
@@ -116,9 +116,68 @@ function prompt() {
     } else if (answers.whatToDo === "add an employee") {
       const roles = [];
       const managers = [];
-      db.query(`SELECT title FROM roles`, (err, result) => {
-        result.forEach(ele => {
+      db.query(`SELECT id AS ID, title FROM roles`, (err, rolesResult) => {
+        rolesResult.forEach(ele => {
           roles.push(ele.title);
+        });
+        db.query(`SELECT id AS ID, CONCAT(first_name,' ',last_name) AS name from employee`, (err, employeeResult) => {
+          employeeResult.forEach(ele => {
+            managers.push(ele.name)
+          });
+          managers.push("None");
+
+          inquirer.prompt([{
+            type:"input",
+            name:"firstName",
+            message:"What is the first name",
+            validate(firstName) {
+              if (firstName){
+                return true;
+              } else {
+                return false;
+              }
+            }
+          }, {
+            type:"input",
+            name:"lastName",
+            message:"What is the last name",
+            validate(lastName) {
+              if (lastName){
+                return true;
+              } else {
+                return false;
+              }
+            }
+          }, {
+            type: "list",
+            name: "role",
+            message: "Select a role",
+            choices: roles
+          }, {
+            type: "list",
+            name: "manager",
+            message: "Select a manager",
+            choices: managers
+          }]).then (ans => {
+            let managerId;
+            for (let i = 0; i < employeeResult.length; i++) {
+              if (employeeResult[i].name === ans.manager) {
+                managerId = employeeResult[i].ID;
+                break;
+              }
+            } 
+            let roleId;
+            for (let i = 0; i < rolesResult.length; i++) {
+              if (rolesResult[i].title === ans.role) {
+                roleId = rolesResult[i].ID;
+                break;
+              }
+            }
+            db.query(`INSERT INTO employee (first_name,last_name,role_id,manager_id) VALUES (?,?,?,?)`, [ans.firstName,ans.lastName,roleId,managerId], (err,results) => {
+
+            });
+            prompt();
+          });
         });
       });
 
