@@ -50,6 +50,14 @@ cd CLI-Employee-Manager
 
 npm install
 
+run the queries in db in order of db.sql --> schema.sql --> seeds.sql
+
+update mysql database information in index.js
+
 ## Usage
 
 npm start
+
+## Links
+
+Video walkthrough: vweinert.com/challenge_12.webm

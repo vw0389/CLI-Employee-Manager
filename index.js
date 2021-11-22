@@ -40,9 +40,17 @@ function prompt() {
         prompt();
       });
     } else if (answers.whatToDo === "view all employees") {
-      db.query(`SELECT * FROM employee`, (err, rows) => {
+      db.query(`Select e.id AS ID, e.first_name AS "First Name", e.last_name AS "Last Name",
+      roles.title AS "Title", department.name AS "Department", roles.salary AS "Salary",
+      CONCAT(m.first_name, ' ', m.last_name) AS Manager
+      FROM employee e 
+      LEFT JOIN employee m ON m.id = e.manager_id
+      LEFT JOIN roles ON roles.id = e.role_id
+      LEFT JOIN department on department.id =  roles.department_id;`, (err, rows) => {
         console.table(rows);
+        prompt();
       });
+      
     } else if (answers.whatToDo === "add a department") {
       inquirer.prompt([
         {
@@ -108,6 +116,12 @@ function prompt() {
     } else if (answers.whatToDo === "add an employee") {
       const roles = [];
       const managers = [];
+      db.query(`SELECT title FROM roles`, (err, result) => {
+        result.forEach(ele => {
+          roles.push(ele.title);
+        });
+      });
+
     } else if (answers.whatToDo === "update an employee role") {
       const employees = [];
       const roles = [];
@@ -136,9 +150,9 @@ function prompt() {
             let firstName = splitName[0];
             let lastName = splitName[1];
             let role = ans.role;
-            db.query(`SELECT id FROM roles WHERE roles.title = ?`, [role], (err,result) => {
+            db.query(`SELECT id FROM roles WHERE roles.title = ?`, [role], (err, result) => {
               let roleId = result[0].id;
-              db.query(`UPDATE employee SET role_id = ? WHERE first_name = ? AND last_name = ?`,[roleId,firstName,lastName],(err,results) => {
+              db.query(`UPDATE employee SET role_id = ? WHERE first_name = ? AND last_name = ?`, [roleId, firstName, lastName], (err, results) => {
                 if (err) {
                   console.log(err);
                   exit();
@@ -147,6 +161,7 @@ function prompt() {
                 }
               });
             });
+
           });
         });
 
